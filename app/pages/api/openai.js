@@ -1,26 +1,24 @@
 // pages/api/openai.js
 
 import axios from 'axios';
+import OpenAI from 'openai';
 
 export default async function handler(req, res) {
+
+  const openai = new OpenAI();
+
   if (req.method === 'POST') {
     const { prompt } = req.body;
 
     try {
-      const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
-        prompt,
-        temperature: 0.5,
-        max_tokens: 100,
-        top_p: 1.0,
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-        }
-      });
+    const chatCompletion = await openai.chat.completions.create({
+        messages: [{ role: "Paintring Describer", content: "Describe the Landscape painting theme" }],
+        model: "gpt-3.5-turbo",
+    });
+    console.log("chatCompletion.data", chatCompletion.data);
 
-      return res.status(200).json(response.data);
+
+      return chatCompletion;
     } catch (error) {
       return res.status(error.response.status).json({ message: error.message });
     }
